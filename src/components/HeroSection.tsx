@@ -1,62 +1,70 @@
 import { motion } from "framer-motion";
-import { Phone, MessageCircle } from "lucide-react";
+import { MessageCircle, ArrowRight, Award } from "lucide-react";
 import type { SiteData } from "@/lib/data";
+
+const WA_NUMBER = "8801712050951";
+const WA_LINK = `https://wa.me/${WA_NUMBER}?text=Hello%20Dr.%20Barkat%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`;
 
 export function HeroSection({ data }: { data: SiteData }) {
   return (
     <section id="home" className="hero-gradient relative min-h-screen flex items-center overflow-hidden">
-      {/* Decorative circles */}
-      <div className="pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-primary/5 blur-3xl" />
+      {/* Decorative blobs */}
+      <div className="pointer-events-none absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-primary/[0.07] blur-[100px]" />
+      <div className="pointer-events-none absolute -bottom-40 -left-40 h-[400px] w-[400px] rounded-full bg-primary/[0.05] blur-[100px]" />
+      <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-primary/[0.03] blur-[120px]" />
 
-      <div className="section-container relative z-10 flex flex-col items-center gap-12 pt-24 lg:flex-row lg:gap-16">
+      <div className="section-container relative z-10 flex flex-col items-center gap-14 pt-24 lg:flex-row lg:gap-20">
         {/* Text */}
         <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="flex-1 text-center lg:text-left"
         >
-          <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary mb-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-xs font-bold text-primary mb-8 border border-primary/15"
+          >
+            <Award className="h-3.5 w-3.5" />
             BMDC Reg: {data.doctor.bmdc}
-          </span>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+          </motion.div>
+
+          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem]">
             {data.doctor.name}
           </h1>
-          <p className="mt-4 text-xl font-medium text-primary">
+          <p className="mt-5 text-lg font-semibold text-primary/80 sm:text-xl">
             {data.doctor.title}
           </p>
-          <p className="mt-6 max-w-xl text-muted-foreground leading-relaxed">
+          <p className="mt-6 max-w-lg text-muted-foreground leading-relaxed text-[0.95rem]">
             {data.doctor.intro}
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-            <a href="tel:+8801784052339" className="btn-primary">
-              <Phone className="h-5 w-5" /> Book Appointment
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+            <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
+              <MessageCircle className="h-5 w-5" /> Book Appointment
             </a>
-            <a
-              href={`https://wa.me/880${data.contact.whatsapp.replace(/[^0-9]/g, "").replace(/^0/, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-whatsapp"
-            >
-              <MessageCircle className="h-5 w-5" /> WhatsApp
+            <a href="/#chambers" className="btn-secondary">
+              View Chambers <ArrowRight className="h-4 w-4" />
             </a>
           </div>
         </motion.div>
 
         {/* Image */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
+          initial={{ opacity: 0, scale: 0.85, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="flex-shrink-0"
         >
           <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-primary/10 blur-2xl" />
+            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-primary/15 to-primary/5 blur-2xl" />
+            <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-br from-primary/20 to-transparent" />
             <img
               src={data.doctor.imageUrl}
               alt="Dr Barkat Ali Child Specialist Khulna"
-              className="relative h-72 w-72 rounded-3xl object-cover shadow-2xl sm:h-80 sm:w-80 lg:h-96 lg:w-96"
+              className="relative h-72 w-72 rounded-[2rem] object-cover shadow-2xl ring-1 ring-primary/10 sm:h-80 sm:w-80 lg:h-[400px] lg:w-[400px]"
             />
           </div>
         </motion.div>
