@@ -209,7 +209,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         </header>
 
         <div className="p-4 sm:p-6 max-w-4xl">
-          {active === "doctor" && <DoctorEditor data={data} onChange={(d) => updateField("doctor", d)} />}
+          {active === "doctor" && <DoctorEditor data={data.doctor} onChange={(d) => updateField("doctor", d)} />}
           {active === "qualifications" && <ListEditor items={data.qualifications} onChange={(v) => updateField("qualifications", v)} label="Qualification" />}
           {active === "experience" && <ListEditor items={data.experience} onChange={(v) => updateField("experience", v)} label="Experience" />}
           {active === "services" && <ListEditor items={data.services} onChange={(v) => updateField("services", v)} label="Service" />}
