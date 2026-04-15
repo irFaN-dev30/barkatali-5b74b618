@@ -34,6 +34,10 @@ export const Route = createRootRoute({
       { name: "author", content: "Dr. Md. Barkat Ali" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Dr. Barkat Ali - Child Specialist Khulna" },
+      { name: "twitter:title", content: "Dr. Barkat Ali - Child Specialist Khulna" },
+      { property: "og:description", content: "Professor Dr. Md. Barkat Ali – Leading Child & Adolescent Health Specialist in Khulna, Bangladesh." },
+      { name: "twitter:description", content: "Professor Dr. Md. Barkat Ali – Leading Child & Adolescent Health Specialist in Khulna, Bangladesh." },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
