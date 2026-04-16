@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
+import { useSiteData } from "@/hooks/use-site-data";
 
 const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
 
@@ -15,6 +16,7 @@ const NAV_LINKS = [
 ];
 
 export function Navbar() {
+  const { data } = useSiteData();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -35,13 +37,13 @@ export function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5 sm:px-6">
         <a href="/#home" className="flex items-center gap-3">
           <img
-            src="https://i.postimg.cc/L56KVndw/Generated-Image-April-16-2026-3-49AM.png"
-            alt="Dr Barkot Ali Child Specialist Khulna"
+            src={data.settings.logo}
+            alt={`${data.doctor.name} Child Specialist Khulna`}
             className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/20"
           />
           <div className="hidden sm:block">
             <span className="font-heading text-base font-bold text-foreground leading-tight block">
-              Dr. Barkot Ali
+              {data.doctor.name}
             </span>
             <span className="text-[0.65rem] text-muted-foreground font-medium">Child Specialist</span>
           </div>

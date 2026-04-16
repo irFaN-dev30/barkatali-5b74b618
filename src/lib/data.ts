@@ -27,6 +27,12 @@ export interface ContactInfo {
   facebook: string;
 }
 
+export interface SiteSettings {
+  siteTitle: string;
+  logo: string;
+  adminPassword: string;
+}
+
 export interface SiteData {
   doctor: DoctorInfo;
   qualifications: string[];
@@ -34,6 +40,7 @@ export interface SiteData {
   services: string[];
   chambers: Chamber[];
   contact: ContactInfo;
+  settings: SiteSettings;
 }
 
 const DEFAULT_DATA: SiteData = {
@@ -96,6 +103,11 @@ const DEFAULT_DATA: SiteData = {
     website: "www.populardiagnostic.com",
     facebook: "facebook.com/populardiagnostickhulna",
   },
+  settings: {
+    siteTitle: "Dr. Barkot Ali - Child Specialist Khulna",
+    logo: "https://i.postimg.cc/L56KVndw/Generated-Image-April-16-2026-3-49AM.png",
+    adminPassword: "Barkot Ali",
+  },
 };
 
 const STORAGE_KEY = "drbarkat_site_data";
@@ -105,7 +117,11 @@ export function getData(): SiteData {
   if (typeof window === "undefined") return DEFAULT_DATA;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Merge with defaults to handle new fields
+      return { ...DEFAULT_DATA, ...parsed, settings: { ...DEFAULT_DATA.settings, ...parsed.settings } };
+    }
   } catch {
     // ignore
   }
@@ -115,7 +131,6 @@ export function getData(): SiteData {
 export function setData(data: SiteData): void {
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  // Dispatch event for live sync between tabs/pages
   window.dispatchEvent(new CustomEvent("siteDataUpdated", { detail: data }));
 }
 
