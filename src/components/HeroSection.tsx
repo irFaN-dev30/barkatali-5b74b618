@@ -3,7 +3,7 @@ import { MessageCircle, ArrowRight, Award } from "lucide-react";
 import type { SiteData } from "@/lib/data";
 
 const WA_NUMBER = "8801712050951";
-const WA_LINK = `https://wa.me/${WA_NUMBER}?text=Hello%20Dr.%20Barkat%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`;
+const WA_LINK = `https://wa.me/${WA_NUMBER}?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`;
 
 export function HeroSection({ data }: { data: SiteData }) {
   return (
@@ -63,7 +63,7 @@ export function HeroSection({ data }: { data: SiteData }) {
             <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-br from-primary/20 to-transparent" />
             <img
               src={data.doctor.imageUrl}
-              alt="Dr Barkat Ali Child Specialist Khulna"
+              alt="Dr Barkot Ali Child Specialist Khulna"
               className="relative h-72 w-72 rounded-[2rem] object-cover shadow-2xl ring-1 ring-primary/10 sm:h-80 sm:w-80 lg:h-[400px] lg:w-[400px]"
             />
           </div>

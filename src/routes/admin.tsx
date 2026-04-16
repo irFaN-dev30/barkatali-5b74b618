@@ -10,7 +10,7 @@ import {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Admin Panel - Dr. Barkat Ali" },
+      { title: "Admin Panel - Dr. Barkot Ali" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -31,7 +31,7 @@ function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === "admin" && password === "Barkat Ali") {
+    if (username === "admin" && password === "Barkot Ali") {
       setAuthenticated(true);
       sessionStorage.setItem("admin_auth", "true");
     } else {

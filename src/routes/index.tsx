@@ -10,17 +10,17 @@ import { useSiteData } from "@/hooks/use-site-data";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dr. Barkat Ali - Child Specialist Khulna | Pediatrician" },
+      { title: "Dr. Barkot Ali - Child Specialist Khulna | Pediatrician" },
       {
         name: "description",
         content:
-          "Professor Dr. Md. Barkat Ali – Leading Newborn, Child & Adolescent Health Specialist in Khulna. MBBS, DCH, FCPS, FRCPCH. Book appointment now.",
+          "Professor Dr. Md. Barkot Ali – Leading Newborn, Child & Adolescent Health Specialist in Khulna. MBBS, DCH, FCPS, FRCPCH. Book appointment now.",
       },
       {
         name: "keywords",
-        content: "Child Specialist Khulna, Pediatrician Khulna, Dr Barkat Ali, Newborn Care Khulna, Baby Doctor Khulna",
+        content: "Child Specialist Khulna, Pediatrician Khulna, Dr Barkot Ali, Newborn Care Khulna, Baby Doctor Khulna",
       },
-      { property: "og:title", content: "Dr. Barkat Ali - Child Specialist Khulna" },
+      { property: "og:title", content: "Dr. Barkot Ali - Child Specialist Khulna" },
       {
         property: "og:description",
         content: "Leading Newborn, Child & Adolescent Health Specialist in Khulna. Book your appointment today.",

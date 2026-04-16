@@ -38,10 +38,10 @@ export interface SiteData {
 
 const DEFAULT_DATA: SiteData = {
   doctor: {
-    name: "Professor Dr. Md. Barkat Ali",
+    name: "Professor Dr. Md. Barkot Ali",
     title: "Newborn, Child & Adolescent Health Specialist",
     bmdc: "A-25803",
-    intro: "With decades of experience in pediatric care, Professor Dr. Md. Barkat Ali is one of the most trusted child health specialists in Khulna. He provides compassionate, evidence-based care for newborns, children, and adolescents.",
+    intro: "With decades of experience in pediatric care, Professor Dr. Md. Barkot Ali is one of the most trusted child health specialists in Khulna. He provides compassionate, evidence-based care for newborns, children, and adolescents.",
     imageUrl: "https://i.postimg.cc/L56KVndw/Generated-Image-April-16-2026-3-49AM.png",
   },
   qualifications: [
