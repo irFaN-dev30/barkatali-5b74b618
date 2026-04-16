@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import { getData, setData, type SiteData } from "@/lib/data";
+import { getData, setData, type SiteData, getDefaultData } from "@/lib/data";
 
 export function useSiteData() {
-  const [data, setLocalData] = useState<SiteData>(getData());
+  const [data, setLocalData] = useState<SiteData>(() => {
+    if (typeof window === "undefined") return getDefaultData();
+    return getData();
+  });
 
   useEffect(() => {
     const handler = (e: Event) => {
