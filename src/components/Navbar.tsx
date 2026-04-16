@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, MessageCircle } from "lucide-react";
 
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkat%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
 
 const NAV_LINKS = [
   { label: "Home", href: "/#home" },
@@ -36,12 +36,12 @@ export function Navbar() {
         <a href="/#home" className="flex items-center gap-3">
           <img
             src="https://i.postimg.cc/L56KVndw/Generated-Image-April-16-2026-3-49AM.png"
-            alt="Dr Barkat Ali Child Specialist Khulna"
+            alt="Dr Barkot Ali Child Specialist Khulna"
             className="h-10 w-10 rounded-full object-cover ring-2 ring-primary/20"
           />
           <div className="hidden sm:block">
             <span className="font-heading text-base font-bold text-foreground leading-tight block">
-              Dr. Barkat Ali
+              Dr. Barkot Ali
             </span>
             <span className="text-[0.65rem] text-muted-foreground font-medium">Child Specialist</span>
           </div>
