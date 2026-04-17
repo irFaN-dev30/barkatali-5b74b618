@@ -1,9 +1,19 @@
 import { Phone, MessageCircle, Globe, Facebook } from "lucide-react";
 import type { SiteData } from "@/lib/data";
 
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkat%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+function toWaLink(num: string) {
+  const digits = num.replace(/[^0-9]/g, "").replace(/^0/, "");
+  return `https://wa.me/880${digits}?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`;
+}
+
+function toTelLink(num: string) {
+  const digits = num.replace(/[^0-9+]/g, "");
+  return `tel:+880${digits.replace(/^0/, "")}`;
+}
 
 export function ContactSection({ data }: { data: SiteData }) {
+  const { whatsappNumbers, phoneNumbers, website, facebook } = data.contact;
+
   return (
     <section id="contact" className="hero-gradient">
       <div className="section-container">
@@ -13,63 +23,73 @@ export function ContactSection({ data }: { data: SiteData }) {
         </div>
 
         <div className="mx-auto grid max-w-3xl gap-5 sm:grid-cols-2">
-          <a
-            href={WA_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
-          >
-            <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-success/10 text-success transition-transform group-hover:scale-110">
-              <MessageCircle className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">WhatsApp</div>
-              <div className="font-bold text-foreground">01712-050951</div>
-            </div>
-          </a>
+          {whatsappNumbers.filter(Boolean).map((num) => (
+            <a
+              key={`wa-${num}`}
+              href={toWaLink(num)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
+            >
+              <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-success/10 text-success transition-transform group-hover:scale-110">
+                <MessageCircle className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-medium">WhatsApp</div>
+                <div className="font-bold text-foreground">{num}</div>
+              </div>
+            </a>
+          ))}
 
-          <a
-            href="tel:+8801784052339"
-            className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
-          >
-            <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-              <Phone className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">Phone</div>
-              <div className="font-bold text-foreground">01784-052339</div>
-            </div>
-          </a>
+          {phoneNumbers.filter(Boolean).map((num) => (
+            <a
+              key={`ph-${num}`}
+              href={toTelLink(num)}
+              className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
+            >
+              <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <Phone className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-medium">Phone</div>
+                <div className="font-bold text-foreground">{num}</div>
+              </div>
+            </a>
+          ))}
 
-          <a
-            href={`https://${data.contact.website}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
-          >
-            <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-              <Globe className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">Website</div>
-              <div className="font-bold text-foreground">{data.contact.website}</div>
-            </div>
-          </a>
+          {website && (
+            <a
+              href={`https://${website}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
+            >
+              <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <Globe className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-medium">Website</div>
+                <div className="font-bold text-foreground">{website}</div>
+              </div>
+            </a>
+          )}
 
-          <a
-            href={`https://${data.contact.facebook}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
-          >
-            <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
-              <Facebook className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-xs text-muted-foreground font-medium">Facebook</div>
-              <div className="font-bold text-foreground">Popular Diagnostic Khulna</div>
-            </div>
-          </a>
+          {facebook && (
+            <a
+              href={`https://${facebook}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-xl hover:-translate-y-1 group"
+            >
+              <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                <Facebook className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="text-xs text-muted-foreground font-medium">Facebook</div>
+                <div className="font-bold text-foreground">Popular Diagnostic Khulna</div>
+              </div>
+            </a>
+          )}
         </div>
       </div>
     </section>

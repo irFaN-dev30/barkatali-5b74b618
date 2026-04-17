@@ -31,7 +31,7 @@ export function HeroSection({ data }: { data: SiteData }) {
             BMDC Reg: {data.doctor.bmdc}
           </motion.div>
 
-          <h1 className="text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-[3.5rem]">
+          <h1 className="whitespace-nowrap text-[1.6rem] font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-3xl md:text-4xl lg:text-[2.75rem]">
             {data.doctor.name}
           </h1>
           <p className="mt-5 text-lg font-semibold text-primary/80 sm:text-xl">

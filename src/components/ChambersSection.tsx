@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { MapPin, Clock, Phone as PhoneIcon, Globe, ExternalLink, MessageCircle } from "lucide-react";
 import type { SiteData } from "@/lib/data";
 
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkat%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },

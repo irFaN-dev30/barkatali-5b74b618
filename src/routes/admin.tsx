@@ -4,10 +4,12 @@ import { useSiteData } from "@/hooks/use-site-data";
 import { resetData, getData, type SiteData } from "@/lib/data";
 import {
   User, GraduationCap, Briefcase, Heart, MapPin, Phone, Settings,
-  Save, RotateCcw, LogOut, Sun, Moon, ChevronLeft, Menu, X, Check
+  Save, RotateCcw, LogOut, Sun, Moon, ChevronLeft, Menu, X, Check,
+  Award, Image as ImageIcon
 } from "lucide-react";
 import {
-  DoctorEditor, ListEditor, ChambersEditor, ContactEditor, SettingsEditor
+  DoctorEditor, ListEditor, ChambersEditor, ContactEditor, SettingsEditor,
+  GalleryEditor, PasswordField
 } from "@/components/admin/AdminEditors";
 
 export const Route = createFileRoute("/admin")({
@@ -62,10 +64,7 @@ function AdminPage() {
               <label className="text-sm font-medium text-foreground">Username</label>
               <input className="admin-input mt-1" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
             </div>
-            <div>
-              <label className="text-sm font-medium text-foreground">Password</label>
-              <input className="admin-input mt-1" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
-            </div>
+            <PasswordField label="Password" value={password} onChange={setPassword} placeholder="Password" />
             {error && <p className="text-sm text-destructive">{error}</p>}
             <button type="submit" className="btn-primary w-full justify-center">Sign In</button>
           </form>
@@ -82,13 +81,15 @@ function AdminPage() {
   return <AdminDashboard onLogout={() => { setAuthenticated(false); sessionStorage.removeItem("admin_auth"); }} />;
 }
 
-type SectionKey = "doctor" | "qualifications" | "experience" | "services" | "chambers" | "contact" | "settings";
+type SectionKey = "doctor" | "qualifications" | "memberships" | "experience" | "services" | "gallery" | "chambers" | "contact" | "settings";
 
 const SECTIONS: { key: SectionKey; label: string; icon: React.ReactNode }[] = [
   { key: "doctor", label: "Doctor Info", icon: <User className="h-4 w-4" /> },
   { key: "qualifications", label: "Qualifications", icon: <GraduationCap className="h-4 w-4" /> },
+  { key: "memberships", label: "Membership", icon: <Award className="h-4 w-4" /> },
   { key: "experience", label: "Experience", icon: <Briefcase className="h-4 w-4" /> },
   { key: "services", label: "Services", icon: <Heart className="h-4 w-4" /> },
+  { key: "gallery", label: "Gallery", icon: <ImageIcon className="h-4 w-4" /> },
   { key: "chambers", label: "Chambers", icon: <MapPin className="h-4 w-4" /> },
   { key: "contact", label: "Contact", icon: <Phone className="h-4 w-4" /> },
   { key: "settings", label: "Settings", icon: <Settings className="h-4 w-4" /> },
@@ -141,7 +142,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
             </button>
           </div>
 
-          <nav className="flex-1 p-3 space-y-1">
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
             {SECTIONS.map((s) => (
               <button
                 key={s.key}
@@ -195,8 +196,10 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
         <div className="p-4 sm:p-6 max-w-4xl">
           {active === "doctor" && <DoctorEditor data={data.doctor} onChange={(d) => updateField("doctor", d)} />}
           {active === "qualifications" && <ListEditor items={data.qualifications} onChange={(v) => updateField("qualifications", v)} label="Qualification" />}
+          {active === "memberships" && <ListEditor items={data.memberships} onChange={(v) => updateField("memberships", v)} label="Membership" />}
           {active === "experience" && <ListEditor items={data.experience} onChange={(v) => updateField("experience", v)} label="Experience" />}
           {active === "services" && <ListEditor items={data.services} onChange={(v) => updateField("services", v)} label="Service" />}
+          {active === "gallery" && <GalleryEditor items={data.gallery} onChange={(v) => updateField("gallery", v)} />}
           {active === "chambers" && <ChambersEditor chambers={data.chambers} onChange={(v) => updateField("chambers", v)} />}
           {active === "contact" && <ContactEditor contact={data.contact} onChange={(v) => updateField("contact", v)} />}
           {active === "settings" && <SettingsEditor settings={data.settings} onChange={(v) => updateField("settings", v)} />}
