@@ -22,9 +22,18 @@ export interface Chamber {
 }
 
 export interface ContactInfo {
-  whatsapp: string;
+  whatsappNumbers: string[];
+  phoneNumbers: string[];
   website: string;
   facebook: string;
+  /** @deprecated kept for backward compatibility */
+  whatsapp?: string;
+}
+
+export interface GalleryItem {
+  id: string;
+  imageUrl: string;
+  caption: string;
 }
 
 export interface SiteSettings {
@@ -36,9 +45,11 @@ export interface SiteSettings {
 export interface SiteData {
   doctor: DoctorInfo;
   qualifications: string[];
+  memberships: string[];
   experience: string[];
   services: string[];
   chambers: Chamber[];
+  gallery: GalleryItem[];
   contact: ContactInfo;
   settings: SiteSettings;
 }
@@ -56,6 +67,11 @@ const DEFAULT_DATA: SiteData = {
     "DCH",
     "FCPS (India)",
     "FRCPCH (UK)",
+  ],
+  memberships: [
+    "Member, Bangladesh Medical Association (BMA)",
+    "Member, Bangladesh Pediatric Association (BPA)",
+    "Fellow, Royal College of Paediatrics and Child Health (UK)",
   ],
   experience: [
     "Former Child Specialist – Bangladesh Navy Hospital (CMH Khulna)",
@@ -98,8 +114,10 @@ const DEFAULT_DATA: SiteData = {
       mapQuery: "Popular Diagnostic Centre Khulna",
     },
   ],
+  gallery: [],
   contact: {
-    whatsapp: "01712-050951",
+    whatsappNumbers: ["01712-050951"],
+    phoneNumbers: ["01784-052339"],
     website: "www.populardiagnostic.com",
     facebook: "facebook.com/populardiagnostickhulna",
   },
@@ -112,16 +130,30 @@ const DEFAULT_DATA: SiteData = {
 
 const STORAGE_KEY = "drbarkat_site_data";
 
-// Abstraction functions — swap localStorage for Firestore later
+// Migrate old shape → new shape
+function migrate(parsed: Partial<SiteData> & { contact?: Partial<ContactInfo> & { whatsapp?: string } }): SiteData {
+  const merged: SiteData = {
+    ...DEFAULT_DATA,
+    ...parsed,
+    contact: { ...DEFAULT_DATA.contact, ...(parsed.contact || {}) },
+    settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
+    memberships: parsed.memberships ?? DEFAULT_DATA.memberships,
+    gallery: parsed.gallery ?? DEFAULT_DATA.gallery,
+  };
+  // Migrate single whatsapp → array
+  if (parsed.contact?.whatsapp && (!parsed.contact.whatsappNumbers || parsed.contact.whatsappNumbers.length === 0)) {
+    merged.contact.whatsappNumbers = [parsed.contact.whatsapp];
+  }
+  if (!Array.isArray(merged.contact.whatsappNumbers)) merged.contact.whatsappNumbers = DEFAULT_DATA.contact.whatsappNumbers;
+  if (!Array.isArray(merged.contact.phoneNumbers)) merged.contact.phoneNumbers = DEFAULT_DATA.contact.phoneNumbers;
+  return merged;
+}
+
 export function getData(): SiteData {
   if (typeof window === "undefined") return DEFAULT_DATA;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      // Merge with defaults to handle new fields
-      return { ...DEFAULT_DATA, ...parsed, settings: { ...DEFAULT_DATA.settings, ...parsed.settings } };
-    }
+    if (stored) return migrate(JSON.parse(stored));
   } catch {
     // ignore
   }
