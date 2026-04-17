@@ -1,7 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
-import { AboutSection, QualificationsSection, ExperienceSection, ServicesSection } from "@/components/Sections";
+import {
+  AboutSection,
+  QualificationsSection,
+  MembershipSection,
+  ExperienceSection,
+  ServicesSection,
+  GallerySection,
+} from "@/components/Sections";
 import { ChambersSection } from "@/components/ChambersSection";
 import { ContactSection, Footer } from "@/components/ContactSection";
 import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
@@ -39,7 +46,6 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   const { data } = useSiteData();
 
-  // JSON-LD Schema
   const schema = {
     "@context": "https://schema.org",
     "@type": "Physician",
@@ -56,6 +62,8 @@ function HomePage() {
     })),
   };
 
+  const floatingWa = data.contact.whatsappNumbers?.[0];
+
   return (
     <>
       <script
@@ -67,13 +75,15 @@ function HomePage() {
         <HeroSection data={data} />
         <AboutSection data={data} />
         <QualificationsSection data={data} />
+        <MembershipSection data={data} />
         <ExperienceSection data={data} />
         <ServicesSection data={data} />
+        <GallerySection data={data} />
         <ChambersSection data={data} />
         <ContactSection data={data} />
       </main>
       <Footer data={data} />
-      <FloatingWhatsApp phone={data.contact.whatsapp} />
+      <FloatingWhatsApp phone={floatingWa} />
     </>
   );
 }

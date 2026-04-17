@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { GraduationCap, Briefcase, Heart, Stethoscope, ShieldCheck, Baby, Thermometer, TrendingUp, Apple, MessageCircle } from "lucide-react";
+import { GraduationCap, Briefcase, Heart, Stethoscope, ShieldCheck, Baby, Thermometer, TrendingUp, Apple, MessageCircle, Award } from "lucide-react";
 import type { SiteData } from "@/lib/data";
 
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkat%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -37,7 +37,7 @@ export function AboutSection({ data }: { data: SiteData }) {
             <div className="absolute -inset-2 rounded-2xl bg-gradient-to-br from-primary/15 to-transparent blur-lg" />
             <img
               src={data.doctor.imageUrl}
-              alt="Dr Barkat Ali Child Specialist Khulna"
+              alt={`${data.doctor.name} Child Specialist Khulna`}
               className="relative h-32 w-32 rounded-2xl object-cover shadow-lg ring-1 ring-primary/10"
             />
           </div>
@@ -77,6 +77,79 @@ export function QualificationsSection({ data }: { data: SiteData }) {
               </div>
               <span className="font-bold text-foreground">{q}</span>
             </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function MembershipSection({ data }: { data: SiteData }) {
+  if (!data.memberships || data.memberships.length === 0) return null;
+  return (
+    <section id="membership" className="section-container">
+      <div className="text-center">
+        <h2 className="section-title">Membership</h2>
+        <p className="section-subtitle">Professional affiliations & memberships</p>
+      </div>
+      <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2">
+        {data.memberships.map((m, i) => (
+          <motion.div
+            key={m + i}
+            custom={i}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            className="glass-card flex items-center gap-4 p-6 transition-all hover:shadow-lg hover:-translate-y-0.5"
+          >
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 text-primary">
+              <Award className="h-5 w-5" />
+            </div>
+            <span className="font-bold text-foreground">{m}</span>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export function GallerySection({ data }: { data: SiteData }) {
+  if (!data.gallery || data.gallery.length === 0) return null;
+  return (
+    <section id="gallery" className="hero-gradient">
+      <div className="section-container">
+        <div className="text-center">
+          <h2 className="section-title">Gallery</h2>
+          <p className="section-subtitle">Moments from our practice</p>
+        </div>
+        <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {data.gallery.map((item, i) => (
+            <motion.figure
+              key={item.id}
+              custom={i}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              className="glass-card overflow-hidden group"
+            >
+              <div className="aspect-square overflow-hidden bg-muted">
+                {item.imageUrl ? (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.caption || "Gallery image"}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : null}
+              </div>
+              {item.caption && (
+                <figcaption className="p-4 text-sm text-foreground font-medium text-center">
+                  {item.caption}
+                </figcaption>
+              )}
+            </motion.figure>
           ))}
         </div>
       </div>

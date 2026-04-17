@@ -1,13 +1,51 @@
-import { Plus, Trash2, Eye } from "lucide-react";
-import type { SiteData, Chamber } from "@/lib/data";
+import { Plus, Trash2, Eye, EyeOff } from "lucide-react";
+import type { SiteData, Chamber, GalleryItem } from "@/lib/data";
 import { useState } from "react";
 
 /* ── Shared Field ── */
-function Field({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function Field({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
       <label className="text-sm font-medium text-foreground">{label}</label>
-      <input className="admin-input mt-1" value={value} onChange={(e) => onChange(e.target.value)} />
+      <input className="admin-input mt-1" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
+    </div>
+  );
+}
+
+/* ── Password Field with Eye Toggle ── */
+export function PasswordField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label?: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      {label && <label className="text-sm font-medium text-foreground">{label}</label>}
+      <div className="relative mt-1">
+        <input
+          className="admin-input pr-11"
+          type={show ? "text" : "password"}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+        />
+        <button
+          type="button"
+          onClick={() => setShow(!show)}
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground transition-colors"
+          tabIndex={-1}
+          aria-label={show ? "Hide password" : "Show password"}
+        >
+          {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
     </div>
   );
 }
@@ -86,6 +124,38 @@ export function ListEditor({ items, onChange, label }: { items: string[]; onChan
   );
 }
 
+/* ── Gallery Editor ── */
+export function GalleryEditor({ items, onChange }: { items: GalleryItem[]; onChange: (v: GalleryItem[]) => void }) {
+  const add = () => onChange([...items, { id: Date.now().toString(), imageUrl: "", caption: "" }]);
+  const remove = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+  const update = (i: number, partial: Partial<GalleryItem>) => {
+    const copy = [...items];
+    copy[i] = { ...copy[i], ...partial };
+    onChange(copy);
+  };
+
+  return (
+    <div className="space-y-5">
+      <p className="text-sm text-muted-foreground">Add gallery images with captions. Paste any image URL.</p>
+      {items.map((item, i) => (
+        <div key={item.id} className="glass-card p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="font-bold text-foreground">Image {i + 1}</h3>
+            <button onClick={() => remove(i)} className="text-destructive hover:bg-destructive/10 rounded-lg p-1.5">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+          <ImageField label="Image URL" value={item.imageUrl} onChange={(v) => update(i, { imageUrl: v })} />
+          <Field label="Caption" value={item.caption} onChange={(v) => update(i, { caption: v })} placeholder="A short caption..." />
+        </div>
+      ))}
+      <button onClick={add} className="btn-secondary text-sm py-2 px-3">
+        <Plus className="h-4 w-4" /> Add Image
+      </button>
+    </div>
+  );
+}
+
 /* ── Chambers Editor ── */
 export function ChambersEditor({ chambers, onChange }: { chambers: Chamber[]; onChange: (v: Chamber[]) => void }) {
   const update = (i: number, partial: Partial<Chamber>) => {
@@ -113,9 +183,9 @@ export function ChambersEditor({ chambers, onChange }: { chambers: Chamber[]; on
           <Field label="Name" value={c.name} onChange={(v) => update(i, { name: v })} />
           <Field label="Address" value={c.address} onChange={(v) => update(i, { address: v })} />
           <Field label="Map Search Query" value={c.mapQuery} onChange={(v) => update(i, { mapQuery: v })} />
-          <Field label="Hotline" value={c.hotline || ""} onChange={(v) => update(i, { hotline: v || undefined })} />
-          <Field label="Website" value={c.website || ""} onChange={(v) => update(i, { website: v || undefined })} />
-          <Field label="Facebook" value={c.facebook || ""} onChange={(v) => update(i, { facebook: v || undefined })} />
+          <Field label="Hotline" value={c.hotline ?? ""} onChange={(v) => update(i, { hotline: v || undefined })} />
+          <Field label="Website" value={c.website ?? ""} onChange={(v) => update(i, { website: v || undefined })} />
+          <Field label="Facebook" value={c.facebook ?? ""} onChange={(v) => update(i, { facebook: v || undefined })} />
           <div>
             <label className="text-sm font-medium text-foreground">Schedule (one per line)</label>
             <textarea
@@ -141,14 +211,45 @@ export function ChambersEditor({ chambers, onChange }: { chambers: Chamber[]; on
   );
 }
 
-/* ── Contact Editor ── */
+/* ── Contact Editor (multi WhatsApp + multi Phone) ── */
 export function ContactEditor({ contact, onChange }: { contact: SiteData["contact"]; onChange: (v: SiteData["contact"]) => void }) {
-  const update = (key: keyof SiteData["contact"], v: string) => onChange({ ...contact, [key]: v });
+  const updateList = (key: "whatsappNumbers" | "phoneNumbers", list: string[]) => onChange({ ...contact, [key]: list });
+
+  const NumberList = ({ label, list, listKey }: { label: string; list: string[]; listKey: "whatsappNumbers" | "phoneNumbers" }) => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-foreground">{label}</label>
+      {list.map((num, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <input
+            className="admin-input"
+            value={num}
+            onChange={(e) => {
+              const copy = [...list];
+              copy[i] = e.target.value;
+              updateList(listKey, copy);
+            }}
+            placeholder="e.g. 01712-050951"
+          />
+          <button
+            onClick={() => updateList(listKey, list.filter((_, idx) => idx !== i))}
+            className="shrink-0 rounded-lg p-2 text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      ))}
+      <button onClick={() => updateList(listKey, [...list, ""])} className="btn-secondary text-sm py-2 px-3">
+        <Plus className="h-4 w-4" /> Add Number
+      </button>
+    </div>
+  );
+
   return (
-    <div className="space-y-4">
-      <Field label="WhatsApp Number" value={contact.whatsapp} onChange={(v) => update("whatsapp", v)} />
-      <Field label="Website" value={contact.website} onChange={(v) => update("website", v)} />
-      <Field label="Facebook" value={contact.facebook} onChange={(v) => update("facebook", v)} />
+    <div className="space-y-6">
+      <NumberList label="WhatsApp Numbers" list={contact.whatsappNumbers} listKey="whatsappNumbers" />
+      <NumberList label="Phone Numbers" list={contact.phoneNumbers} listKey="phoneNumbers" />
+      <Field label="Website" value={contact.website} onChange={(v) => onChange({ ...contact, website: v })} />
+      <Field label="Facebook" value={contact.facebook} onChange={(v) => onChange({ ...contact, facebook: v })} />
     </div>
   );
 }
@@ -193,18 +294,9 @@ export function SettingsEditor({ settings, onChange }: { settings: SiteData["set
       {/* Password Change */}
       <div className="glass-card p-5 space-y-4">
         <h3 className="font-bold text-foreground text-lg">Change Admin Password</h3>
-        <div>
-          <label className="text-sm font-medium text-foreground">Current Password</label>
-          <input className="admin-input mt-1" type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)} />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-foreground">New Password</label>
-          <input className="admin-input mt-1" type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-foreground">Confirm New Password</label>
-          <input className="admin-input mt-1" type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} />
-        </div>
+        <PasswordField label="Current Password" value={currentPw} onChange={setCurrentPw} />
+        <PasswordField label="New Password" value={newPw} onChange={setNewPw} />
+        <PasswordField label="Confirm New Password" value={confirmPw} onChange={setConfirmPw} />
         {pwMsg && (
           <p className={`text-sm ${pwMsg.type === "error" ? "text-destructive" : "text-success"}`}>{pwMsg.text}</p>
         )}
