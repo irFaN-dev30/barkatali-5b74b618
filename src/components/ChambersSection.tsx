@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
 import { MapPin, Clock, Phone as PhoneIcon, Globe, ExternalLink, MessageCircle } from "lucide-react";
 import type { SiteData } from "@/lib/data";
-
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+import { getAppointmentLink } from "@/lib/contact-utils";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -10,6 +9,8 @@ const fadeUp = {
 };
 
 export function ChambersSection({ data }: { data: SiteData }) {
+  const appt = getAppointmentLink(data);
+  const ApptIcon = appt?.type === "phone" ? PhoneIcon : MessageCircle;
   return (
     <section id="chambers" className="section-container">
       <div className="text-center">
@@ -89,9 +90,16 @@ export function ChambersSection({ data }: { data: SiteData }) {
               </div>
 
               {/* Appointment CTA */}
-              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-whatsapp mt-6 w-full justify-center text-sm py-3">
-                <MessageCircle className="h-4 w-4" /> Book Appointment
-              </a>
+              {appt && (
+                <a
+                  href={appt.href}
+                  target={appt.type === "whatsapp" ? "_blank" : undefined}
+                  rel={appt.type === "whatsapp" ? "noopener noreferrer" : undefined}
+                  className="btn-whatsapp mt-6 w-full justify-center text-sm py-3"
+                >
+                  <ApptIcon className="h-4 w-4" /> Book Appointment
+                </a>
+              )}
             </div>
           </motion.div>
         ))}
