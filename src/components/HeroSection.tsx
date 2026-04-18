@@ -1,34 +1,23 @@
 import { motion } from "framer-motion";
 import { MessageCircle, ArrowRight, Award, Phone } from "lucide-react";
 import type { SiteData } from "@/lib/data";
-
-function cleanDigits(num: string) {
-  return num.replace(/[^0-9]/g, "").replace(/^0/, "");
-}
+import { getAppointmentLink } from "@/lib/contact-utils";
 
 export function HeroSection({ data }: { data: SiteData }) {
-  const waNum = data.contact.whatsappNumbers.find(Boolean);
-  const phoneNum = data.contact.phoneNumbers.find(Boolean);
+  const appt = getAppointmentLink(data);
 
-  // Priority: WhatsApp → Phone (tel:) → hide
   let appointmentBtn: React.ReactNode = null;
-  if (waNum) {
-    const digits = cleanDigits(waNum);
+  if (appt) {
+    const Icon = appt.type === "whatsapp" ? MessageCircle : Phone;
+    const label = appt.type === "whatsapp" ? "Book Appointment" : "Call for Appointment";
     appointmentBtn = (
       <a
-        href={`https://wa.me/880${digits}?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`}
-        target="_blank"
-        rel="noopener noreferrer"
+        href={appt.href}
+        target={appt.type === "whatsapp" ? "_blank" : undefined}
+        rel={appt.type === "whatsapp" ? "noopener noreferrer" : undefined}
         className="btn-whatsapp"
       >
-        <MessageCircle className="h-5 w-5" /> Book Appointment
-      </a>
-    );
-  } else if (phoneNum) {
-    const digits = cleanDigits(phoneNum);
-    appointmentBtn = (
-      <a href={`tel:+880${digits}`} className="btn-whatsapp">
-        <Phone className="h-5 w-5" /> Call for Appointment
+        <Icon className="h-5 w-5" /> {label}
       </a>
     );
   }
