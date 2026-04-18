@@ -1,10 +1,8 @@
-import { Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X, MessageCircle, Phone } from "lucide-react";
 import { useSiteData } from "@/hooks/use-site-data";
-
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+import { getAppointmentLink } from "@/lib/contact-utils";
 
 const NAV_LINKS = [
   { label: "Home", href: "/#home" },
@@ -21,6 +19,8 @@ export function Navbar() {
   const { data } = useSiteData();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const appt = getAppointmentLink(data);
+  const ApptIcon = appt?.type === "phone" ? Phone : MessageCircle;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -62,9 +62,16 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-whatsapp ml-4 text-sm py-2.5 px-5">
-            <MessageCircle className="h-4 w-4" /> Appointment
-          </a>
+          {appt && (
+            <a
+              href={appt.href}
+              target={appt.type === "whatsapp" ? "_blank" : undefined}
+              rel={appt.type === "whatsapp" ? "noopener noreferrer" : undefined}
+              className="btn-whatsapp ml-4 text-sm py-2.5 px-5"
+            >
+              <ApptIcon className="h-4 w-4" /> Appointment
+            </a>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -98,9 +105,16 @@ export function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-whatsapp mt-2 justify-center text-sm">
-                <MessageCircle className="h-4 w-4" /> Book Appointment
-              </a>
+              {appt && (
+                <a
+                  href={appt.href}
+                  target={appt.type === "whatsapp" ? "_blank" : undefined}
+                  rel={appt.type === "whatsapp" ? "noopener noreferrer" : undefined}
+                  className="btn-whatsapp mt-2 justify-center text-sm"
+                >
+                  <ApptIcon className="h-4 w-4" /> Book Appointment
+                </a>
+              )}
             </div>
           </motion.div>
         )}

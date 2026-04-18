@@ -1,8 +1,7 @@
 import { motion } from "framer-motion";
-import { GraduationCap, Briefcase, Heart, Stethoscope, ShieldCheck, Baby, Thermometer, TrendingUp, Apple, MessageCircle, Award } from "lucide-react";
+import { GraduationCap, Briefcase, Heart, Stethoscope, ShieldCheck, Baby, Thermometer, TrendingUp, Apple, MessageCircle, Award, Phone } from "lucide-react";
 import type { SiteData } from "@/lib/data";
-
-const WA_LINK = "https://wa.me/8801712050951?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.";
+import { getAppointmentLink } from "@/lib/contact-utils";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -187,6 +186,8 @@ export function ExperienceSection({ data }: { data: SiteData }) {
 }
 
 export function ServicesSection({ data }: { data: SiteData }) {
+  const appt = getAppointmentLink(data);
+  const ApptIcon = appt?.type === "phone" ? Phone : MessageCircle;
   return (
     <section id="services" className="hero-gradient">
       <div className="section-container">
@@ -214,11 +215,18 @@ export function ServicesSection({ data }: { data: SiteData }) {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
-          <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
-            <MessageCircle className="h-5 w-5" /> Book an Appointment
-          </a>
-        </div>
+        {appt && (
+          <div className="text-center mt-12">
+            <a
+              href={appt.href}
+              target={appt.type === "whatsapp" ? "_blank" : undefined}
+              rel={appt.type === "whatsapp" ? "noopener noreferrer" : undefined}
+              className="btn-whatsapp"
+            >
+              <ApptIcon className="h-5 w-5" /> Book an Appointment
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );
