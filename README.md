@@ -1,107 +1,98 @@
 # Dr. Barkot Ali — Child Specialist Khulna
 
-A modern doctor portfolio website with a built-in admin panel (CMS-style) to manage all content dynamically.
+A modern doctor portfolio website with a built-in admin panel (CMS), backed by **Supabase** (via Lovable Cloud).
 
 - **Framework:** TanStack Start (React 19 + Vite 7)
 - **Styling:** Tailwind CSS v4
-- **Data storage:** Browser `localStorage` (no backend required for now)
-- **Admin panel:** `/admin` (default credentials → username: `admin`, password: `Barkot Ali`)
-
-> ⚠️ Change the admin password from the **Settings** section after first login.
+- **Backend:** Supabase (PostgreSQL + Auth + Storage)
+- **Admin panel:** `/admin` (email + password login)
 
 ---
 
-## 🚀 Deploy to Vercel — Full Step-by-Step Guide
-
-This project currently uses the **Cloudflare Workers adapter** (default Lovable setup). To deploy on **Vercel**, we need to switch to the Vercel adapter.
+## 🚀 Deploy to Vercel — Full Step-by-Step Guide (Zero Errors)
 
 ### Step 1 — Push the code to GitHub
 
-1. In the Lovable editor, click **GitHub → Connect to GitHub** (top-right).
-2. Authorize Lovable, then click **Create Repository**.
-3. Wait until the repo is created — you'll get a GitHub URL like
-   `https://github.com/<your-username>/<repo-name>`.
+1. In Lovable, top-right → **GitHub → Connect to GitHub** → authorize → **Create Repository**.
+2. Wait until you get a URL like `https://github.com/<your-username>/<repo>`. You can keep it **private**.
 
 ### Step 2 — Import the project into Vercel
 
-1. Go to [vercel.com](https://vercel.com) and sign in (use GitHub for the easiest flow).
-2. Click **Add New → Project**.
-3. Select your GitHub repo from the list.
-4. **Framework Preset:** Vercel will auto-detect **Vite**. Leave it as is.
-5. **Build & Output Settings** — leave the defaults:
-   - Build Command: `npm run build` (or `bun run build`)
-   - Output Directory: `dist` (auto-detected)
-   - Install Command: `npm install` (or `bun install`)
-6. **Root Directory:** leave as `./`
-7. Click **Deploy**.
+1. Go to [vercel.com](https://vercel.com) → sign in with GitHub.
+2. **Add New → Project** → select your repo.
+3. **Framework Preset:** Vercel auto-detects **Vite**. Leave it.
+4. **Build & Output Settings** — leave defaults:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
+5. **Root Directory:** `./`
+6. **Don't click Deploy yet** — first add env vars (Step 3).
 
-### Step 3 — Environment Variables
+### Step 3 — Environment Variables (REQUIRED)
 
-This project **does not use any environment variables** at the moment, because:
+In Vercel's project setup screen, scroll down to **Environment Variables** and add these **two** variables:
 
-- All content is stored in the browser's `localStorage` (no database).
-- There are no API keys, no server functions, no third-party integrations.
+| Name | Value |
+|---|---|
+| `VITE_SUPABASE_URL` | Copy from Lovable: **Cloud → Settings → Project URL** |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Copy from Lovable: **Cloud → Settings → Publishable Key** |
 
-So in Vercel's **Environment Variables** section, you can leave it **empty**. ✅
+> 🟢 Both keys are **publishable** (safe to expose in the browser). Row-Level Security in the database protects your data.
+> 🔴 **Never** add the `SUPABASE_SERVICE_ROLE_KEY` — it bypasses security. We don't need it.
 
-> 📌 **For the future** — if you later add a backend (e.g. Lovable Cloud / Supabase / Firebase), add their keys here:
->
-> | Name | Where to find it | Example |
-> |---|---|---|
-> | `VITE_SUPABASE_URL` | Supabase project settings → API | `https://xxxx.supabase.co` |
-> | `VITE_SUPABASE_ANON_KEY` | Supabase project settings → API | `eyJhbGciOi...` |
-> | `VITE_FIREBASE_API_KEY` | Firebase console → Project settings | `AIzaSy...` |
->
-> All client-visible vars **must start with `VITE_`** for Vite to expose them.
->
-> ⚠️ Never commit secret/private keys. Add them only in Vercel's dashboard.
+After adding both, click **Deploy**. ✅
 
-### Step 4 — Custom Domain
+### Step 4 — Update Supabase Auth redirect URLs
 
-1. After the first successful deploy, open your project on Vercel.
-2. Go to **Settings → Domains**.
-3. Click **Add** and enter your custom domain (e.g. `drbarkatali.com`).
-4. Vercel will show you DNS records to add to your domain registrar:
+So login redirects work on your Vercel domain:
+
+1. Open Lovable → **Cloud → Users → Auth Settings**.
+2. Add your Vercel URL (e.g. `https://your-app.vercel.app`) and your custom domain (if any) to **Site URL** and **Redirect URLs**.
+
+### Step 5 — Custom Domain on Vercel
+
+1. Vercel project → **Settings → Domains** → **Add** your domain (e.g. `drbarkatali.com`).
+2. Vercel shows DNS records — add them at your domain registrar:
    - **A Record** → `76.76.21.21`
    - **CNAME (www)** → `cname.vercel-dns.com`
-5. Add those records in your domain provider's dashboard (Namecheap, GoDaddy, etc.).
-6. Wait 5–30 minutes for DNS propagation. Vercel will issue an SSL certificate automatically.
+3. Wait 5–30 min for DNS + auto SSL.
+4. Add the new domain to Supabase Auth Redirect URLs (Step 4) too.
 
-### Step 5 — Future updates
+### Step 6 — Future updates
 
-Every time you push code to your GitHub `main` branch, Vercel will **automatically redeploy** the site. No manual steps needed.
+Push to GitHub `main` → Vercel auto-redeploys. Done.
+
+---
+
+## 🧑‍💻 Admin Panel — First-Time Setup
+
+1. Go to `/admin`.
+2. Click **"Need an account? Sign up"** → enter your email + password (min 6 chars). Email is **auto-confirmed**, so you're signed in immediately.
+3. **Grant yourself the admin role** (one-time):
+   - Open Lovable → **Cloud → Database → Tables → user_roles**.
+   - Click **+ Insert row**:
+     - `user_id` = your auth user ID (find it in **Cloud → Users**)
+     - `role` = `admin`
+   - Save. Refresh `/admin` — you're now in.
+4. From the panel you can edit doctor info, qualifications, memberships, experience, services, gallery (file upload!), chambers, contact, and site settings.
+
+> Changes save to Supabase and appear **instantly on every device** for all visitors (realtime sync).
 
 ---
 
 ## 🛠️ Local Development
 
 ```bash
-bun install      # or: npm install
-bun dev          # or: npm run dev
+bun install
+bun dev
 ```
 
-Visit `http://localhost:8080` (or the port shown in the terminal).
-
-## 🧑‍💻 Admin Panel
-
-- Visit `/admin`
-- Default username: **`admin`**
-- Default password: **`Barkot Ali`** (change it from Settings after first login)
-
-From the admin panel you can edit:
-
-- Doctor info (name, title, BMDC, intro, profile image)
-- Qualifications, Memberships, Experience, Services
-- Gallery (images + captions)
-- Chambers (multiple, with schedule, phones, hotline, etc.)
-- Contact (multiple WhatsApp + Phone numbers, website, Facebook)
-- Site settings (logo, site title, admin password)
-
-All changes are saved to the browser's `localStorage` and reflect on the website instantly.
+For local dev, create a `.env` at the project root with the same two `VITE_SUPABASE_*` vars as in Step 3.
 
 ---
 
 ## 📝 Notes
 
-- If the website's **Book Appointment** button shows nothing, it's because both the WhatsApp and Phone number lists are empty in the admin Contact section. Add at least one number.
-- Since data is stored in `localStorage`, the admin's edits are **per-browser** — they won't sync across devices. If you need a real shared database, ask Lovable to enable **Lovable Cloud**.
+- **Appointment button** auto-falls-back: WhatsApp (if any number set) → Phone dialer → hidden.
+- **Gallery** uploads go to Supabase Storage `gallery` bucket (public read, admin-only write).
+- **Realtime sync:** any admin save instantly updates the website on all open browsers.
