@@ -1,5 +1,4 @@
-// Firebase-ready data abstraction layer
-// Replace getData/setData internals with Firestore calls later
+// Site data types — backed by Supabase `site_content` table.
 
 export interface DoctorInfo {
   name: string;
@@ -26,20 +25,19 @@ export interface ContactInfo {
   phoneNumbers: string[];
   website: string;
   facebook: string;
-  /** @deprecated kept for backward compatibility */
-  whatsapp?: string;
 }
 
 export interface GalleryItem {
   id: string;
   imageUrl: string;
   caption: string;
+  /** Storage path inside the `gallery` bucket — used to delete the file when removed. */
+  storagePath?: string;
 }
 
 export interface SiteSettings {
   siteTitle: string;
   logo: string;
-  adminPassword: string;
 }
 
 export interface SiteData {
@@ -54,124 +52,48 @@ export interface SiteData {
   settings: SiteSettings;
 }
 
-const DEFAULT_DATA: SiteData = {
+export const DEFAULT_DATA: SiteData = {
   doctor: {
     name: "Professor Dr. Md. Barkot Ali",
     title: "Newborn, Child & Adolescent Health Specialist",
     bmdc: "A-25803",
-    intro: "With decades of experience in pediatric care, Professor Dr. Md. Barkot Ali is one of the most trusted child health specialists in Khulna. He provides compassionate, evidence-based care for newborns, children, and adolescents.",
+    intro: "With decades of experience in pediatric care, Professor Dr. Md. Barkot Ali is one of the most trusted child health specialists in Khulna.",
     imageUrl: "https://i.postimg.cc/L56KVndw/Generated-Image-April-16-2026-3-49AM.png",
   },
-  qualifications: [
-    "MBBS (Dhaka)",
-    "DCH",
-    "FCPS (India)",
-    "FRCPCH (UK)",
-  ],
-  memberships: [
-    "Member, Bangladesh Medical Association (BMA)",
-    "Member, Bangladesh Pediatric Association (BPA)",
-    "Fellow, Royal College of Paediatrics and Child Health (UK)",
-  ],
-  experience: [
-    "Former Child Specialist – Bangladesh Navy Hospital (CMH Khulna)",
-    "Former Head of Pediatrics – GMC",
-    "Professor & Head of Pediatrics – MSMC",
-  ],
-  services: [
-    "Newborn Care",
-    "Child & Adolescent Treatment",
-    "Vaccination & Immunization",
-    "Fever & Infection Treatment",
-    "Growth Monitoring",
-    "Nutrition Advice",
-  ],
-  chambers: [
-    {
-      id: "1",
-      name: "Khadija Villa",
-      address: "Holding No-20, Ward No-5, KDA Market Road (Rishipara), Daulatpur, Khulna",
-      schedule: [
-        "Daily 5 PM – 9 PM",
-        "Monday Closed",
-        "Friday 9 AM – 12 PM",
-      ],
-      phones: ["01784-052339", "01972-050951"],
-      mapQuery: "Khadija Villa Daulatpur Khulna",
-    },
-    {
-      id: "2",
-      name: "Popular Diagnostic Centre Ltd. (Khulna)",
-      address: "House #37, KDA Avenue, Moylapota-Sheikhpara",
-      schedule: [
-        "Tuesday, Wednesday, Thursday",
-        "10 AM – 1 PM",
-      ],
-      phones: [],
-      hotline: "09666787821",
-      website: "www.populardiagnostic.com",
-      facebook: "facebook.com/populardiagnostickhulna",
-      mapQuery: "Popular Diagnostic Centre Khulna",
-    },
-  ],
+  qualifications: [],
+  memberships: [],
+  experience: [],
+  services: [],
+  chambers: [],
   gallery: [],
   contact: {
-    whatsappNumbers: ["01712-050951"],
-    phoneNumbers: ["01784-052339"],
-    website: "www.populardiagnostic.com",
-    facebook: "facebook.com/populardiagnostickhulna",
+    whatsappNumbers: [],
+    phoneNumbers: [],
+    website: "",
+    facebook: "",
   },
   settings: {
     siteTitle: "Dr. Barkot Ali - Child Specialist Khulna",
     logo: "https://i.postimg.cc/L56KVndw/Generated-Image-April-16-2026-3-49AM.png",
-    adminPassword: "Barkot Ali",
   },
 };
 
-const STORAGE_KEY = "drbarkat_site_data";
-
-// Migrate old shape → new shape
-function migrate(parsed: Partial<SiteData> & { contact?: Partial<ContactInfo> & { whatsapp?: string } }): SiteData {
-  const merged: SiteData = {
-    ...DEFAULT_DATA,
-    ...parsed,
-    contact: { ...DEFAULT_DATA.contact, ...(parsed.contact || {}) },
-    settings: { ...DEFAULT_DATA.settings, ...(parsed.settings || {}) },
-    memberships: parsed.memberships ?? DEFAULT_DATA.memberships,
-    gallery: parsed.gallery ?? DEFAULT_DATA.gallery,
-  };
-  // Migrate single whatsapp → array
-  if (parsed.contact?.whatsapp && (!parsed.contact.whatsappNumbers || parsed.contact.whatsappNumbers.length === 0)) {
-    merged.contact.whatsappNumbers = [parsed.contact.whatsapp];
-  }
-  if (!Array.isArray(merged.contact.whatsappNumbers)) merged.contact.whatsappNumbers = DEFAULT_DATA.contact.whatsappNumbers;
-  if (!Array.isArray(merged.contact.phoneNumbers)) merged.contact.phoneNumbers = DEFAULT_DATA.contact.phoneNumbers;
-  return merged;
-}
-
-export function getData(): SiteData {
-  if (typeof window === "undefined") return DEFAULT_DATA;
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return migrate(JSON.parse(stored));
-  } catch {
-    // ignore
-  }
-  return DEFAULT_DATA;
-}
-
-export function setData(data: SiteData): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  window.dispatchEvent(new CustomEvent("siteDataUpdated", { detail: data }));
-}
-
-export function resetData(): void {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(STORAGE_KEY);
-  window.dispatchEvent(new CustomEvent("siteDataUpdated", { detail: DEFAULT_DATA }));
-}
-
 export function getDefaultData(): SiteData {
   return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+/** Merge whatever shape comes from the database with safe defaults so the UI never crashes. */
+export function normalizeData(raw: unknown): SiteData {
+  const r = (raw || {}) as Partial<SiteData>;
+  return {
+    doctor: { ...DEFAULT_DATA.doctor, ...(r.doctor || {}) },
+    qualifications: Array.isArray(r.qualifications) ? r.qualifications : [],
+    memberships: Array.isArray(r.memberships) ? r.memberships : [],
+    experience: Array.isArray(r.experience) ? r.experience : [],
+    services: Array.isArray(r.services) ? r.services : [],
+    chambers: Array.isArray(r.chambers) ? r.chambers : [],
+    gallery: Array.isArray(r.gallery) ? r.gallery : [],
+    contact: { ...DEFAULT_DATA.contact, ...(r.contact || {}) },
+    settings: { ...DEFAULT_DATA.settings, ...(r.settings || {}) },
+  };
 }
