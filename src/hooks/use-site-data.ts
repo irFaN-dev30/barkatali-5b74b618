@@ -59,7 +59,7 @@ export function useSiteData() {
     setData(newData); // optimistic
     const { error: err } = await supabase
       .from("site_content")
-      .update({ data: newData as unknown as Record<string, unknown> })
+      .update({ data: newData as unknown as never })
       .eq("key", ROW_KEY);
     if (err) {
       setError(err.message);
