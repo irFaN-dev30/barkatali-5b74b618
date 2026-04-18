@@ -216,11 +216,17 @@ export function ChambersEditor({ chambers, onChange }: { chambers: Chamber[]; on
   );
 }
 
-/* ── Contact Editor (multi WhatsApp + multi Phone) ── */
-export function ContactEditor({ contact, onChange }: { contact: SiteData["contact"]; onChange: (v: SiteData["contact"]) => void }) {
-  const updateList = (key: "whatsappNumbers" | "phoneNumbers", list: string[]) => onChange({ ...contact, [key]: list });
-
-  const NumberList = ({ label, list, listKey }: { label: string; list: string[]; listKey: "whatsappNumbers" | "phoneNumbers" }) => (
+/* ── Number List (top-level so input doesn't unmount each render) ── */
+function NumberList({
+  label,
+  list,
+  onChange,
+}: {
+  label: string;
+  list: string[];
+  onChange: (v: string[]) => void;
+}) {
+  return (
     <div className="space-y-2">
       <label className="text-sm font-medium text-foreground">{label}</label>
       {list.map((num, i) => (
@@ -231,28 +237,40 @@ export function ContactEditor({ contact, onChange }: { contact: SiteData["contac
             onChange={(e) => {
               const copy = [...list];
               copy[i] = e.target.value;
-              updateList(listKey, copy);
+              onChange(copy);
             }}
             placeholder="e.g. 01712-050951"
           />
           <button
-            onClick={() => updateList(listKey, list.filter((_, idx) => idx !== i))}
+            type="button"
+            onClick={() => onChange(list.filter((_, idx) => idx !== i))}
             className="shrink-0 rounded-lg p-2 text-destructive hover:bg-destructive/10"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
       ))}
-      <button onClick={() => updateList(listKey, [...list, ""])} className="btn-secondary text-sm py-2 px-3">
+      <button type="button" onClick={() => onChange([...list, ""])} className="btn-secondary text-sm py-2 px-3">
         <Plus className="h-4 w-4" /> Add Number
       </button>
     </div>
   );
+}
 
+/* ── Contact Editor (multi WhatsApp + multi Phone) ── */
+export function ContactEditor({ contact, onChange }: { contact: SiteData["contact"]; onChange: (v: SiteData["contact"]) => void }) {
   return (
     <div className="space-y-6">
-      <NumberList label="WhatsApp Numbers" list={contact.whatsappNumbers} listKey="whatsappNumbers" />
-      <NumberList label="Phone Numbers" list={contact.phoneNumbers} listKey="phoneNumbers" />
+      <NumberList
+        label="WhatsApp Numbers"
+        list={contact.whatsappNumbers}
+        onChange={(list) => onChange({ ...contact, whatsappNumbers: list })}
+      />
+      <NumberList
+        label="Phone Numbers"
+        list={contact.phoneNumbers}
+        onChange={(list) => onChange({ ...contact, phoneNumbers: list })}
+      />
       <Field label="Website" value={contact.website} onChange={(v) => onChange({ ...contact, website: v })} />
       <Field label="Facebook" value={contact.facebook} onChange={(v) => onChange({ ...contact, facebook: v })} />
     </div>

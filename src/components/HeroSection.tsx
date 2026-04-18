@@ -1,11 +1,38 @@
 import { motion } from "framer-motion";
-import { MessageCircle, ArrowRight, Award } from "lucide-react";
+import { MessageCircle, ArrowRight, Award, Phone } from "lucide-react";
 import type { SiteData } from "@/lib/data";
 
-const WA_NUMBER = "8801712050951";
-const WA_LINK = `https://wa.me/${WA_NUMBER}?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`;
+function cleanDigits(num: string) {
+  return num.replace(/[^0-9]/g, "").replace(/^0/, "");
+}
 
 export function HeroSection({ data }: { data: SiteData }) {
+  const waNum = data.contact.whatsappNumbers.find(Boolean);
+  const phoneNum = data.contact.phoneNumbers.find(Boolean);
+
+  // Priority: WhatsApp → Phone (tel:) → hide
+  let appointmentBtn: React.ReactNode = null;
+  if (waNum) {
+    const digits = cleanDigits(waNum);
+    appointmentBtn = (
+      <a
+        href={`https://wa.me/880${digits}?text=Hello%20Dr.%20Barkot%20Ali%2C%20I%20would%20like%20to%20book%20an%20appointment.`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="btn-whatsapp"
+      >
+        <MessageCircle className="h-5 w-5" /> Book Appointment
+      </a>
+    );
+  } else if (phoneNum) {
+    const digits = cleanDigits(phoneNum);
+    appointmentBtn = (
+      <a href={`tel:+880${digits}`} className="btn-whatsapp">
+        <Phone className="h-5 w-5" /> Call for Appointment
+      </a>
+    );
+  }
+
   return (
     <section id="home" className="hero-gradient relative min-h-screen flex items-center overflow-hidden">
       {/* Decorative blobs */}
@@ -42,9 +69,7 @@ export function HeroSection({ data }: { data: SiteData }) {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
-            <a href={WA_LINK} target="_blank" rel="noopener noreferrer" className="btn-whatsapp">
-              <MessageCircle className="h-5 w-5" /> Book Appointment
-            </a>
+            {appointmentBtn}
             <a href="/#chambers" className="btn-secondary">
               View Chambers <ArrowRight className="h-4 w-4" />
             </a>
