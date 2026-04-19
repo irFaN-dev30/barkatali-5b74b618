@@ -38,8 +38,9 @@ export function useSiteData() {
 
   // Realtime updates — when admin saves on one device, all visitors see it
   useEffect(() => {
+    const channelName = `site-content-${Math.random().toString(36).slice(2)}`;
     const channel = supabase
-      .channel("site-content-changes")
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "site_content", filter: `key=eq.${ROW_KEY}` },
